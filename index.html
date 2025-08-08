@@ -5,594 +5,423 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Equipment Maintenance Tracker</title>
     <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
             background-color: #f5f5f5;
         }
-        .dashboard {
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
             background: white;
             border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
             padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+        
         h1 {
-            color: #2c3e50;
+            color: var(--primary);
             text-align: center;
             margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--secondary);
         }
-        .service-tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .service-tab {
-            padding: 10px 20px;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-        .service-tab.active {
-            background: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
+        
         .controls {
             display: flex;
             justify-content: space-between;
-            margin: 20px 0;
+            margin-bottom: 20px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
         }
-        .control-btn {
-            padding: 10px 15px;
-            background: #2ecc71;
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: 15px;
+        }
+        
+        select, input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        button {
+            padding: 8px 16px;
+            background-color: var(--secondary);
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: background-color 0.3s;
         }
-        .control-btn:hover {
-            background: #27ae60;
+        
+        button:hover {
+            background-color: #2980b9;
         }
-        .control-btn.alert {
-            background: #e74c3c;
-        }
-        .control-btn.alert:hover {
-            background: #c0392b;
-        }
+        
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            background: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        
         th {
-            background: #34495e;
+            background-color: var(--primary);
             color: white;
-            padding: 12px;
-            text-align: left;
             position: sticky;
             top: 0;
         }
-        td {
-            padding: 10px;
-            border-bottom: 1px solid #ecf0f1;
-        }
-        tr:hover {
-            background-color: #f8f9fa;
-        }
-        .status {
-            display: inline-block;
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-        }
-        .status.green {
-            background-color: #2ecc71;
-        }
-        .status.yellow {
-            background-color: #f39c12;
-        }
-        .status.red {
-            background-color: #e74c3c;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-        }
-        .modal-content {
-            background-color: white;
-            margin: 5% auto;
-            padding: 20px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 600px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
-        .close {
-            color: #7f8c8d;
-            float: right;
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .close:hover {
-            color: #34495e;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #34495e;
-        }
-        input, select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #bdc3c7;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        .submit-btn {
-            background: #3498db;
+        
+        .service-header {
+            background-color: var(--secondary);
             color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        tr:hover {
+            background-color: #e9e9e9;
+        }
+        
+        .status-ok {
+            background-color: var(--success);
+            color: white;
             font-weight: bold;
-            width: 100%;
-        }
-        .submit-btn:hover {
-            background: #2980b9;
-        }
-        .search-container {
-            margin-bottom: 20px;
-        }
-        #searchInput {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #bdc3c7;
+            padding: 4px 8px;
             border-radius: 4px;
         }
+        
+        .status-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .status-action {
+            background-color: var(--danger);
+            color: white;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+        
         @media (max-width: 768px) {
-            .service-tabs {
-                flex-direction: column;
-            }
             .controls {
                 flex-direction: column;
             }
+            
             table {
-                font-size: 14px;
+                display: block;
+                overflow-x: auto;
             }
         }
     </style>
 </head>
 <body>
-    <div class="dashboard">
+    <div class="container">
         <h1>Equipment Maintenance Tracker</h1>
         
-        <div class="service-tabs">
-            <button class="service-tab active" data-interval="500">500 Hour Service</button>
-            <button class="service-tab" data-interval="1000">1000 Hour Service</button>
-            <button class="service-tab" data-interval="2000">2000 Hour Service</button>
-        </div>
-        
         <div class="controls">
-            <div class="search-container">
-                <input type="text" id="searchInput" placeholder="Search equipment...">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search equipment..." onkeyup="searchTable()">
             </div>
-            <div>
-                <button class="control-btn" id="addEquipment">Add Equipment</button>
-                <button class="control-btn" id="updateReadings">Update Readings</button>
-                <button class="control-btn alert" id="sendAlerts">Send Alerts</button>
+            <div class="filter-group">
+                <select id="statusFilter" onchange="filterTable()">
+                    <option value="">All Status</option>
+                    <option value="ok">OK</option>
+                    <option value="warning">Warning</option>
+                    <option value="action">Action Required</option>
+                </select>
+                <select id="equipmentFilter" onchange="filterTable()">
+                    <option value="">All Equipment</option>
+                    <option value="Tipper">Tippers</option>
+                    <option value="Excavator">Excavators</option>
+                    <option value="Loader">Loaders</option>
+                </select>
+                <button onclick="exportToExcel()">Export to Excel</button>
             </div>
         </div>
         
         <table id="maintenanceTable">
             <thead>
                 <tr>
-                    <th>Equipment ID</th>
-                    <th>Last Service</th>
-                    <th>Last HMR</th>
-                    <th>Current HMR</th>
-                    <th>Next Due</th>
-                    <th>Pending</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+                    <th rowspan="2">Equipment ID</th>
+                    <th rowspan="2">Type</th>
+                    <th rowspan="2">Current HMR</th>
+                    <th colspan="5" class="service-header">500 hr Service</th>
+                    <th colspan="5" class="service-header">1000 hr Service</th>
+                    <th colspan="5" class="service-header">2000 hr Service</th>
+                </tr>
+                <tr>
+                    <!-- 500 hr sub-headers -->
+                    <th class="service-header">Previous</th>
+                    <th class="service-header">Last Date</th>
+                    <th class="service-header">Next Due</th>
+                    <th class="service-header">HMR Left</th>
+                    <th class="service-header">Status</th>
+                    
+                    <!-- 1000 hr sub-headers -->
+                    <th class="service-header">Previous</th>
+                    <th class="service-header">Last Date</th>
+                    <th class="service-header">Next Due</th>
+                    <th class="service-header">HMR Left</th>
+                    <th class="service-header">Status</th>
+                    
+                    <!-- 2000 hr sub-headers -->
+                    <th class="service-header">Previous</th>
+                    <th class="service-header">Last Date</th>
+                    <th class="service-header">Next Due</th>
+                    <th class="service-header">HMR Left</th>
+                    <th class="service-header">Status</th>
                 </tr>
             </thead>
-            <tbody id="tableBody">
-                <!-- Data will be loaded here -->
+            <tbody>
+                <!-- Sample Data - Replace with dynamic data from your backend -->
+                <tr>
+                    <td>0095</td>
+                    <td>Tipper</td>
+                    <td>5145</td>
+                    
+                    <!-- 500 hr data -->
+                    <td>5106</td>
+                    <td>2024-05-15</td>
+                    <td>5606</td>
+                    <td>461</td>
+                    <td><span class="status-ok">OK</span></td>
+                    
+                    <!-- 1000 hr data -->
+                    <td>5146</td>
+                    <td>2024-04-10</td>
+                    <td>6146</td>
+                    <td>1001</td>
+                    <td><span class="status-ok">OK</span></td>
+                    
+                    <!-- 2000 hr data -->
+                    <td>4105</td>
+                    <td>2024-03-01</td>
+                    <td>6105</td>
+                    <td>960</td>
+                    <td><span class="status-ok">OK</span></td>
+                </tr>
+                <tr>
+                    <td>9880</td>
+                    <td>Tipper</td>
+                    <td>3527</td>
+                    
+                    <!-- 500 hr data -->
+                    <td>3097</td>
+                    <td>2024-06-01</td>
+                    <td>3597</td>
+                    <td>70</td>
+                    <td><span class="status-action">Alert Maintenance</span></td>
+                    
+                    <!-- 1000 hr data -->
+                    <td>3095</td>
+                    <td>2024-05-20</td>
+                    <td>4095</td>
+                    <td>568</td>
+                    <td><span class="status-ok">OK</span></td>
+                    
+                    <!-- 2000 hr data -->
+                    <td>2152</td>
+                    <td>2024-02-15</td>
+                    <td>4152</td>
+                    <td>625</td>
+                    <td><span class="status-ok">OK</span></td>
+                </tr>
+                <tr>
+                    <td>4651</td>
+                    <td>Excavator</td>
+                    <td>2944</td>
+                    
+                    <!-- 500 hr data -->
+                    <td>2569</td>
+                    <td>2024-05-25</td>
+                    <td>3069</td>
+                    <td>125</td>
+                    <td><span class="status-warning">Warning</span></td>
+                    
+                    <!-- 1000 hr data -->
+                    <td>2088</td>
+                    <td>2024-04-05</td>
+                    <td>3088</td>
+                    <td>144</td>
+                    <td><span class="status-warning">Warning</span></td>
+                    
+                    <!-- 2000 hr data -->
+                    <td>2132</td>
+                    <td>2024-01-10</td>
+                    <td>4132</td>
+                    <td>1188</td>
+                    <td><span class="status-ok">OK</span></td>
+                </tr>
+                <tr>
+                    <td>0926</td>
+                    <td>Loader</td>
+                    <td>1849</td>
+                    
+                    <!-- 500 hr data -->
+                    <td>1530</td>
+                    <td>2024-06-05</td>
+                    <td>2030</td>
+                    <td>181</td>
+                    <td><span class="status-ok">OK</span></td>
+                    
+                    <!-- 1000 hr data -->
+                    <td>1011</td>
+                    <td>2024-05-10</td>
+                    <td>2011</td>
+                    <td>162</td>
+                    <td><span class="status-ok">OK</span></td>
+                    
+                    <!-- 2000 hr data -->
+                    <td>0</td>
+                    <td>-</td>
+                    <td>2000</td>
+                    <td>151</td>
+                    <td><span class="status-ok">OK</span></td>
+                </tr>
+                <tr>
+                    <td>2052</td>
+                    <td>Excavator</td>
+                    <td>498</td>
+                    
+                    <!-- 500 hr data -->
+                    <td>0</td>
+                    <td>-</td>
+                    <td>500</td>
+                    <td>2</td>
+                    <td><span class="status-action">Alert Maintenance</span></td>
+                    
+                    <!-- 1000 hr data -->
+                    <td>0</td>
+                    <td>-</td>
+                    <td>1000</td>
+                    <td>502</td>
+                    <td><span class="status-ok">OK</span></td>
+                    
+                    <!-- 2000 hr data -->
+                    <td>0</td>
+                    <td>-</td>
+                    <td>2000</td>
+                    <td>1502</td>
+                    <td><span class="status-ok">OK</span></td>
+                </tr>
             </tbody>
         </table>
-    </div>
-    
-    <!-- Add Equipment Modal -->
-    <div id="addModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Add New Equipment</h2>
-            <form id="addForm">
-                <div class="form-group">
-                    <label for="equipmentId">Equipment ID</label>
-                    <input type="text" id="equipmentId" required>
-                </div>
-                <div class="form-group">
-                    <label for="lastServiceDate">Last Service Date</label>
-                    <input type="date" id="lastServiceDate" required>
-                </div>
-                <div class="form-group">
-                    <label for="lastHMR">Last HMR</label>
-                    <input type="number" step="0.1" id="lastHMR" required>
-                </div>
-                <div class="form-group">
-                    <label for="currentHMR">Current HMR</label>
-                    <input type="number" step="0.1" id="currentHMR" required>
-                </div>
-                <button type="submit" class="submit-btn">Add Equipment</button>
-            </form>
+        
+        <div class="footer">
+            <p>Last Updated: <span id="lastUpdated"><?php echo date('Y-m-d H:i:s'); ?></span></p>
+            <p>© 2024 Equipment Maintenance System</p>
         </div>
     </div>
-    
-    <!-- Update Readings Modal -->
-    <div id="updateModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Update Equipment Readings</h2>
-            <form id="updateForm">
-                <div class="form-group">
-                    <label for="updateEquipmentId">Equipment ID</label>
-                    <input type="text" id="updateEquipmentId" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="newHMR">New HMR Reading</label>
-                    <input type="number" step="0.1" id="newHMR" required>
-                </div>
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="servicePerformed"> Service Performed
-                    </label>
-                </div>
-                <div id="serviceDetails" style="display: none;">
-                    <div class="form-group">
-                        <label for="serviceDate">Service Date</label>
-                        <input type="date" id="serviceDate">
-                    </div>
-                </div>
-                <button type="submit" class="submit-btn">Update Readings</button>
-            </form>
-        </div>
-    </div>
-    
+
     <script>
-        // Equipment data structure
-        let equipmentData = [
-            // Tippers
-            {
-                id: "AP39UQ0097",
-                type: "Tipper",
-                lastServiceDate: "2025-07-19",
-                lastHMR: 8769.4,
-                currentHMR: 9269.4,
-                intervals: {
-                    500: 9269.4,
-                    1000: 9769.4,
-                    2000: 10769.4
-                }
-            },
-            {
-                id: "AP39UQ0091",
-                type: "Tipper",
-                lastServiceDate: "2025-07-24",
-                lastHMR: 8500.0,
-                currentHMR: 9022.3,
-                intervals: {
-                    500: 9000.0,
-                    1000: 9500.0,
-                    2000: 10500.0
-                }
-            },
-            // Excavators
-            {
-                id: "AP39WC2928",
-                type: "Excavator",
-                lastServiceDate: "2025-07-21",
-                lastHMR: 8350.0,
-                currentHMR: 8820.1,
-                intervals: {
-                    500: 8850.0,
-                    1000: 9350.0,
-                    2000: 10350.0
-                }
-            },
-            // Loaders
-            {
-                id: "AP39NR9178",
-                type: "SDLG Loader",
-                lastServiceDate: "2025-07-24",
-                lastHMR: 8500.0,
-                currentHMR: 9022.3,
-                intervals: {
-                    500: 9000.0,
-                    1000: 9500.0,
-                    2000: 10500.0
-                }
-            },
-            // Volvo Excavators
-            {
-                id: "253178",
-                type: "Volvo Excavator",
-                lastServiceDate: "2025-07-18",
-                lastHMR: 4200.0,
-                currentHMR: 4690.5,
-                intervals: {
-                    500: 4700.0,
-                    1000: 5200.0,
-                    2000: 6200.0
-                }
-            }
-        ];
-        
-        let currentInterval = 500;
-        
-        // Initialize the application
-        function init() {
-            renderTable();
-            setupEventListeners();
-        }
-        
-        // Render the equipment table
-        function renderTable() {
-            const tbody = document.getElementById("tableBody");
-            tbody.innerHTML = "";
-            
-            const searchTerm = document.getElementById("searchInput").value.toLowerCase();
-            
-            equipmentData.forEach(equipment => {
-                if (searchTerm && !equipment.id.toLowerCase().includes(searchTerm)) {
-                    return;
+        // Simple search function
+        function searchTable() {
+            const input = document.getElementById("searchInput");
+            const filter = input.value.toUpperCase();
+            const table = document.getElementById("maintenanceTable");
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 2; i < tr.length; i++) { // Start from 2 to skip headers
+                let found = false;
+                const td = tr[i].getElementsByTagName("td");
+                
+                for (let j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        const txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            found = true;
+                            break;
+                        }
+                    }
                 }
                 
-                const nextDue = equipment.intervals[currentInterval];
-                const pending = (nextDue - equipment.currentHMR).toFixed(1);
-                const status = getStatus(pending);
+                tr[i].style.display = found ? "" : "none";
+            }
+        }
+        
+        // Filter by status and equipment type
+        function filterTable() {
+            const statusFilter = document.getElementById("statusFilter").value;
+            const equipmentFilter = document.getElementById("equipmentFilter").value;
+            const table = document.getElementById("maintenanceTable");
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 2; i < tr.length; i++) {
+                const statusCells = [
+                    tr[i].cells[7],  // 500hr status
+                    tr[i].cells[12], // 1000hr status
+                    tr[i].cells[17]  // 2000hr status
+                ];
                 
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${equipment.id}<br><small>${equipment.type}</small></td>
-                    <td>${formatDate(equipment.lastServiceDate)}</td>
-                    <td>${equipment.lastHMR.toFixed(1)}</td>
-                    <td>${equipment.currentHMR.toFixed(1)}</td>
-                    <td>${nextDue.toFixed(1)}</td>
-                    <td>${pending}</td>
-                    <td><span class="status ${status}"></span></td>
-                    <td>
-                        <button class="control-btn small update-btn" data-id="${equipment.id}">Update</button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-            
-            // Add event listeners to update buttons
-            document.querySelectorAll(".update-btn").forEach(btn => {
-                btn.addEventListener("click", function() {
-                    openUpdateModal(this.getAttribute("data-id"));
-                });
-            });
-        }
-        
-        // Get status based on pending hours
-        function getStatus(pending) {
-            if (pending <= 0) return "red";
-            if (pending <= currentInterval * 0.2) return "yellow";
-            return "green";
-        }
-        
-        // Format date
-        function formatDate(dateString) {
-            if (!dateString) return "-";
-            const date = new Date(dateString);
-            return date.toLocaleDateString();
-        }
-        
-        // Setup event listeners
-        function setupEventListeners() {
-            // Service interval tabs
-            document.querySelectorAll(".service-tab").forEach(tab => {
-                tab.addEventListener("click", function() {
-                    document.querySelectorAll(".service-tab").forEach(t => t.classList.remove("active"));
-                    this.classList.add("active");
-                    currentInterval = parseInt(this.getAttribute("data-interval"));
-                    renderTable();
-                });
-            });
-            
-            // Search functionality
-            document.getElementById("searchInput").addEventListener("input", renderTable);
-            
-            // Add equipment modal
-            document.getElementById("addEquipment").addEventListener("click", function() {
-                document.getElementById("addModal").style.display = "block";
-            });
-            
-            // Update readings modal
-            document.getElementById("updateReadings").addEventListener("click", function() {
-                const equipmentId = prompt("Enter Equipment ID to update:");
-                if (equipmentId) {
-                    openUpdateModal(equipmentId);
-                }
-            });
-            
-            // Send alerts
-            document.getElementById("sendAlerts").addEventListener("click", sendAlerts);
-            
-            // Modal close buttons
-            document.querySelectorAll(".close").forEach(btn => {
-                btn.addEventListener("click", function() {
-                    this.closest(".modal").style.display = "none";
-                });
-            });
-            
-            // Service performed checkbox
-            document.getElementById("servicePerformed").addEventListener("change", function() {
-                document.getElementById("serviceDetails").style.display = this.checked ? "block" : "none";
-            });
-            
-            // Add equipment form submission
-            document.getElementById("addForm").addEventListener("submit", function(e) {
-                e.preventDefault();
-                addEquipment();
-            });
-            
-            // Update readings form submission
-            document.getElementById("updateForm").addEventListener("submit", function(e) {
-                e.preventDefault();
-                updateEquipment();
-            });
-            
-            // Close modal when clicking outside
-            window.addEventListener("click", function(event) {
-                if (event.target.classList.contains("modal")) {
-                    event.target.style.display = "none";
-                }
-            });
-        }
-        
-        // Open update modal for specific equipment
-        function openUpdateModal(equipmentId) {
-            const equipment = equipmentData.find(e => e.id === equipmentId);
-            if (!equipment) {
-                alert("Equipment not found!");
-                return;
-            }
-            
-            document.getElementById("updateEquipmentId").value = equipment.id;
-            document.getElementById("newHMR").value = equipment.currentHMR;
-            document.getElementById("servicePerformed").checked = false;
-            document.getElementById("serviceDetails").style.display = "none";
-            document.getElementById("updateModal").style.display = "block";
-        }
-        
-        // Add new equipment
-        function addEquipment() {
-            const id = document.getElementById("equipmentId").value;
-            const lastServiceDate = document.getElementById("lastServiceDate").value;
-            const lastHMR = parseFloat(document.getElementById("lastHMR").value);
-            const currentHMR = parseFloat(document.getElementById("currentHMR").value);
-            
-            // Determine equipment type based on ID pattern
-            let type = "Other";
-            if (id.startsWith("AP39UQ")) type = "Tipper";
-            else if (id.startsWith("AP39WC") || id.startsWith("AP39WF")) type = "Excavator";
-            else if (id.startsWith("AP39NR")) type = "SDLG Loader";
-            else if (id.match(/^\d+$/)) type = "Volvo Excavator";
-            
-            const newEquipment = {
-                id,
-                type,
-                lastServiceDate,
-                lastHMR,
-                currentHMR,
-                intervals: {
-                    500: currentHMR + 500,
-                    1000: currentHMR + 1000,
-                    2000: currentHMR + 2000
-                }
-            };
-            
-            equipmentData.push(newEquipment);
-            renderTable();
-            document.getElementById("addModal").style.display = "none";
-            document.getElementById("addForm").reset();
-            alert("Equipment added successfully!");
-        }
-        
-        // Update equipment readings
-        function updateEquipment() {
-            const id = document.getElementById("updateEquipmentId").value;
-            const newHMR = parseFloat(document.getElementById("newHMR").value);
-            const servicePerformed = document.getElementById("servicePerformed").checked;
-            const serviceDate = document.getElementById("serviceDate").value;
-            
-            const equipment = equipmentData.find(e => e.id === id);
-            if (!equipment) {
-                alert("Equipment not found!");
-                return;
-            }
-            
-            if (newHMR < equipment.currentHMR && !servicePerformed) {
-                alert("HMR cannot decrease unless service was performed!");
-                return;
-            }
-            
-            if (servicePerformed) {
-                equipment.lastServiceDate = serviceDate || new Date().toISOString().split('T')[0];
-                equipment.lastHMR = equipment.currentHMR;
+                const equipmentType = tr[i].cells[1].textContent;
+                let statusMatch = false;
+                let equipmentMatch = equipmentFilter === "" || equipmentType === equipmentFilter;
                 
-                // Update all intervals based on new HMR
-                equipment.intervals = {
-                    500: newHMR + 500,
-                    1000: newHMR + 1000,
-                    2000: newHMR + 2000
-                };
+                // Check if any service matches status filter
+                if (statusFilter === "") {
+                    statusMatch = true;
+                } else {
+                    for (const cell of statusCells) {
+                        if (cell.textContent.toLowerCase().includes(statusFilter)) {
+                            statusMatch = true;
+                            break;
+                        }
+                    }
+                }
+                
+                tr[i].style.display = (statusMatch && equipmentMatch) ? "" : "none";
             }
-            
-            equipment.currentHMR = newHMR;
-            renderTable();
-            document.getElementById("updateModal").style.display = "none";
-            alert("Readings updated successfully!");
         }
         
-        // Send alerts for overdue equipment
-        function sendAlerts() {
-            const overdueEquipment = equipmentData.filter(equipment => {
-                const nextDue = equipment.intervals[currentInterval];
-                return (nextDue - equipment.currentHMR) <= 0;
-            });
-            
-            if (overdueEquipment.length === 0) {
-                alert(`No equipment is due for ${currentInterval} hour service!`);
-                return;
-            }
-            
-            let alertMessage = `URGENT: The following equipment requires ${currentInterval} hour service:\n\n`;
-            
-            overdueEquipment.forEach(equipment => {
-                const nextDue = equipment.intervals[currentInterval];
-                const pending = (nextDue - equipment.currentHMR).toFixed(1);
-                alertMessage += `Equipment: ${equipment.id} (${equipment.type})\n`;
-                alertMessage += `Current HMR: ${equipment.currentHMR.toFixed(1)}\n`;
-                alertMessage += `Service Due At: ${nextDue.toFixed(1)}\n`;
-                alertMessage += `Overdue By: ${Math.abs(pending)} hours\n\n`;
-            });
-            
-            alertMessage += "Maintenance team has been notified.";
-            
-            // In a real application, this would send an actual email
-            alert(alertMessage);
-            console.log("Alert email content:", alertMessage);
+        // Export to Excel function (placeholder)
+        function exportToExcel() {
+            alert("Exporting data to Excel...");
+            // In a real implementation, this would generate an Excel file
         }
         
-        // Initialize the application
-        init();
+        // Initialize the table
+        document.addEventListener('DOMContentLoaded', function() {
+            filterTable(); // Apply any default filters
+        });
     </script>
 </body>
 </html>
