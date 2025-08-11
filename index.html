@@ -1,562 +1,641 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Equipment Maintenance Tracker</title>
-    <style>
-        :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --success: #28a745;
-            --warning: #ffc107;
-            --danger: #dc3545;
-            --light: #f8f9fa;
-            --dark: #343a40;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            padding: 20px;
-            position: relative;
-        }
-        
-        h1, h2, h3 {
-            color: var(--primary);
-            text-align: center;
-        }
-        
-        h1 {
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--secondary);
-        }
-        
-        .home-container {
-            text-align: center;
-            padding: 50px 20px;
-        }
-        
-        .equipment-list {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 40px;
-        }
-        
-        .equipment-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            padding: 20px;
-            width: 300px;
-            transition: transform 0.3s;
-        }
-        
-        .equipment-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .card-header {
-            background-color: var(--primary);
-            color: white;
-            padding: 10px;
-            border-radius: 5px 5px 0 0;
-            margin: -20px -20px 20px -20px;
-        }
-        
-        .card-body {
-            text-align: left;
-        }
-        
-        .equipment-item {
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .main-btn {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 12px 24px;
-            background-color: var(--secondary);
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 18px;
-            transition: background-color 0.3s;
-        }
-        
-        .main-btn:hover {
-            background-color: #2980b9;
-        }
-        
-        /* Maintenance Page Styles */
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .search-box {
-            flex: 1;
-            min-width: 250px;
-        }
-        
-        .filter-group {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        
-        select, input {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        
-        button {
-            padding: 8px 16px;
-            background-color: var(--secondary);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        button:hover {
-            background-color: #2980b9;
-        }
-        
-        .floating-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: var(--secondary);
-            color: white;
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            z-index: 100;
-            transition: all 0.3s;
-        }
-        
-        .floating-btn:hover {
-            background-color: #2980b9;
-            transform: scale(1.1);
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        th, td {
-            padding: 12px 15px;
-            text-align: center;
-            border: 1px solid #ddd;
-        }
-        
-        th {
-            background-color: var(--primary);
-            color: white;
-            position: sticky;
-            top: 0;
-        }
-        
-        .service-header {
-            background-color: var(--secondary);
-            color: white;
-        }
-        
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        
-        tr:hover {
-            background-color: #e9e9e9;
-        }
-        
-        .status-ok {
-            background-color: var(--success);
-            color: white;
-            font-weight: bold;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-        
-        .status-warning {
-            background-color: var(--warning);
-            color: var(--dark);
-            font-weight: bold;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-        
-        .status-action {
-            background-color: var(--danger);
-            color: white;
-            font-weight: bold;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-        
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-        }
-        
-        .back-btn {
-            display: inline-block;
-            margin-bottom: 20px;
-            padding: 8px 16px;
-            background-color: var(--primary);
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-        
-        @media (max-width: 768px) {
-            .controls {
-                flex-direction: column;
-            }
-            
-            table {
-                display: block;
-                overflow-x: auto;
-            }
-            
-            .equipment-card {
-                width: 100%;
-            }
-        }
-    </style>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Equipment Maintenance Tracker</title>
+ <style>
+ :root {
+ --primary: #2c3e50;
+ --secondary: #3498db;
+ --success: #28a745;
+ --warning: #ffc107;
+ --danger: #dc3545;
+ --light: #f8f9fa;
+ --dark: #343a40;
+ }
+ 
+ body {
+ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+ margin: 0;
+ padding: 0;
+ background-color: #f5f5f5;
+ }
+ 
+ .container {
+ max-width: 1400px;
+ margin: 0 auto;
+ background: white;
+ border-radius: 8px;
+ box-shadow: 0 0 20px rgba(0,0,0,0.1);
+ padding: 20px;
+ position: relative;
+ }
+ 
+ h1, h2, h3 {
+ color: var(--primary);
+ text-align: center;
+ }
+ 
+ h1 {
+ margin-bottom: 30px;
+ padding-bottom: 15px;
+ border-bottom: 2px solid var(--secondary);
+ }
+ 
+ .home-container {
+ text-align: center;
+ padding: 50px 20px;
+ }
+ 
+ .equipment-list {
+ display: flex;
+ flex-wrap: wrap;
+ justify-content: center;
+ gap: 30px;
+ margin-top: 40px;
+ }
+ 
+ .equipment-card {
+ background: white;
+ border-radius: 8px;
+ box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+ padding: 20px;
+ width: 300px;
+ transition: transform 0.3s;
+ }
+ 
+ .equipment-card:hover {
+ transform: translateY(-5px);
+ }
+ 
+ .card-header {
+ background-color: var(--primary);
+ color: white;
+ padding: 10px;
+ border-radius: 5px 5px 0 0;
+ margin: -20px -20px 20px -20px;
+ }
+ 
+ .card-body {
+ text-align: left;
+ }
+ 
+ .equipment-item {
+ margin-bottom: 10px;
+ padding-bottom: 10px;
+ border-bottom: 1px solid #eee;
+ }
+ 
+ .main-btn {
+ display: inline-block;
+ margin-top: 30px;
+ padding: 12px 24px;
+ background-color: var(--secondary);
+ color: white;
+ text-decoration: none;
+ border-radius: 4px;
+ font-size: 18px;
+ transition: background-color 0.3s;
+ }
+ 
+ .main-btn:hover {
+ background-color: #2980b9;
+ }
+ 
+ .status-btn {
+ display: inline-block;
+ margin: 10px;
+ padding: 10px 20px;
+ color: white;
+ text-decoration: none;
+ border-radius: 4px;
+ font-size: 16px;
+ transition: background-color 0.3s;
+ cursor: pointer;
+ }
+ 
+ .warning-btn {
+ background-color: var(--warning);
+ color: var(--dark);
+ }
+ 
+ .warning-btn:hover {
+ background-color: #e0a800;
+ }
+ 
+ .mail-sent-btn {
+ background-color: var(--danger);
+ }
+ 
+ .mail-sent-btn:hover {
+ background-color: #c82333;
+ }
+ 
+ /* Maintenance Page Styles */
+ .controls {
+ display: flex;
+ justify-content: space-between;
+ margin-bottom: 20px;
+ flex-wrap: wrap;
+ gap: 15px;
+ }
+ 
+ .search-box {
+ flex: 1;
+ min-width: 250px;
+ }
+ 
+ .filter-group {
+ display: flex;
+ gap: 15px;
+ align-items: center;
+ }
+ 
+ select, input {
+ padding: 8px 12px;
+ border: 1px solid #ddd;
+ border-radius: 4px;
+ font-size: 14px;
+ }
+ 
+ button {
+ padding: 8px 16px;
+ background-color: var(--secondary);
+ color: white;
+ border: none;
+ border-radius: 4px;
+ cursor: pointer;
+ transition: background-color 0.3s;
+ }
+ 
+ button:hover {
+ background-color: #2980b9;
+ }
+ 
+ .floating-btn {
+ position: fixed;
+ bottom: 30px;
+ right: 30px;
+ width: 60px;
+ height: 60px;
+ border-radius: 50%;
+ background-color: var(--secondary);
+ color: white;
+ font-size: 24px;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ cursor: pointer;
+ box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+ z-index: 100;
+ transition: all 0.3s;
+ }
+ 
+ .floating-btn:hover {
+ background-color: #2980b9;
+ transform: scale(1.1);
+ }
+ 
+ table {
+ width: 100%;
+ border-collapse: collapse;
+ margin-top: 20px;
+ }
+ 
+ th, td {
+ padding: 12px 15px;
+ text-align: center;
+ border: 1px solid #ddd;
+ }
+ 
+ th {
+ background-color: var(--primary);
+ color: white;
+ position: sticky;
+ top: 0;
+ }
+ 
+ .service-header {
+ background-color: var(--secondary);
+ color: white;
+ }
+ 
+ tr:nth-child(even) {
+ background-color: #f2f2f2;
+ }
+ 
+ tr:hover {
+ background-color: #e9e9e9;
+ }
+ 
+ .status-ok {
+ background-color: var(--success);
+ color: white;
+ font-weight: bold;
+ padding: 4px 8px;
+ border-radius: 4px;
+ }
+ 
+ .status-warning {
+ background-color: var(--warning);
+ color: var(--dark);
+ font-weight: bold;
+ padding: 4px 8px;
+ border-radius: 4px;
+ }
+ 
+ .status-action {
+ background-color: var(--danger);
+ color: white;
+ font-weight: bold;
+ padding: 4px 8px;
+ border-radius: 4px;
+ }
+ 
+ .footer {
+ margin-top: 30px;
+ text-align: center;
+ color: #666;
+ font-size: 14px;
+ }
+ 
+ .back-btn {
+ display: inline-block;
+ margin-bottom: 20px;
+ padding: 8px 16px;
+ background-color: var(--primary);
+ color: white;
+ text-decoration: none;
+ border-radius: 4px;
+ }
+ 
+ @media (max-width: 768px) {
+ .controls {
+ flex-direction: column;
+ }
+ 
+ table {
+ display: block;
+ overflow-x: auto;
+ }
+ 
+ .equipment-card {
+ width: 100%;
+ }
+ }
+ </style>
 </head>
 <body>
-    <!-- Home Page -->
-    <div id="homePage" class="container home-container">
-        <h1>Equipment Management System</h1>
-        <h2>Our Fleet</h2>
-        
-        <div class="equipment-list">
-            <div class="equipment-card">
-                <div class="card-header">
-                    <h3>Tippers</h3>
-                </div>
-                <div class="card-body">
-                    
-                </div>
-            </div>
-            
-            <div class="equipment-card">
-                <div class="card-header">
-                    <h3>Excavators & Loaders</h3>
-                </div>
-                <div class="card-body">
-                </div>
-            </div>
-        </div>
-        
-        <a href="#" class="main-btn" onclick="showMaintenancePage()">View Maintenance Schedule</a>
-        
-        <div class="footer">
-            <p>© 2024 Equipment Management System</p>
-        </div>
-    </div>
-    
-    <!-- Maintenance Page (initially hidden) -->
-    <div id="maintenancePage" class="container" style="display: none;">
-        <a href="#" class="back-btn" onclick="showHomePage()">← Back to Home</a>
-        <h1>Equipment Maintenance Tracker</h1>
-        
-        <div class="controls">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search equipment..." onkeyup="searchTable()">
-            </div>
-            <div class="filter-group">
-                <select id="statusFilter" onchange="filterTable()">
-                    <option value="">All Status</option>
-                    <option value="ok">OK</option>
-                    <option value="warning">Warning</option>
-                    <option value="action">Action Required</option>
-                </select>
-                <select id="equipmentFilter" onchange="filterTable()">
-                    <option value="">All Equipment</option>
-                    <option value="Tipper">Tippers</option>
-                    <option value="Excavator">Excavators</option>
-                    <option value="Loader">Loaders</option>
-                </select>
-                <button onclick="exportToExcel()">Export to Excel</button>
-                <button onclick="showHomePage()">Back to Home</button>
-            </div>
-        </div>
-        
-        <table id="maintenanceTable">
-            <thead>
-                <tr>
-                    <th rowspan="2">Equipment ID</th>
-                    <th rowspan="2">Type</th>
-                    <th rowspan="2">Current HMR</th>
-                    <th colspan="5" class="service-header">500 hr Service</th>
-                    <th colspan="5" class="service-header">1000 hr Service</th>
-                    <th colspan="5" class="service-header">2000 hr Service</th>
-                </tr>
-                <tr>
-                    <!-- 500 hr sub-headers -->
-                    <th class="service-header">Previous</th>
-                    <th class="service-header">Last Date</th>
-                    <th class="service-header">Next Due</th>
-                    <th class="service-header">HMR Left</th>
-                    <th class="service-header">Status</th>
-                    
-                    <!-- 1000 hr sub-headers -->
-                    <th class="service-header">Previous</th>
-                    <th class="service-header">Last Date</th>
-                    <th class="service-header">Next Due</th>
-                    <th class="service-header">HMR Left</th>
-                    <th class="service-header">Status</th>
-                    
-                    <!-- 2000 hr sub-headers -->
-                    <th class="service-header">Previous</th>
-                    <th class="service-header">Last Date</th>
-                    <th class="service-header">Next Due</th>
-                    <th class="service-header">HMR Left</th>
-                    <th class="service-header">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Sample Data for Tippers -->
-                <tr>
-                    <td>AP39UQ0097</td>
-                    <td>Tipper</td>
-                    <td>5145</td>
-                    
-                    <!-- 500 hr data -->
-                    <td>5106</td>
-                    <td>2024-05-15</td>
-                    <td>5606</td>
-                    <td>461</td>
-                    <td><span class="status-ok">OK</span></td>
-                    
-                    <!-- 1000 hr data -->
-                    <td>5146</td>
-                    <td>2024-04-10</td>
-                    <td>6146</td>
-                    <td>1001</td>
-                    <td><span class="status-ok">OK</span></td>
-                    
-                    <!-- 2000 hr data -->
-                    <td>4105</td>
-                    <td>2024-03-01</td>
-                    <td>6105</td>
-                    <td>960</td>
-                    <td><span class="status-ok">OK</span></td>
-                </tr>
-                <tr>
-                    <td>AP39UQ0091</td>
-                    <td>Tipper</td>
-                    <td>3527</td>
-                    
-                    <!-- 500 hr data -->
-                    <td>3097</td>
-                    <td>2024-06-01</td>
-                    <td>3597</td>
-                    <td>70</td>
-                    <td><span class="status-action">Mail Sent</span></td>
-                    
-                    <!-- 1000 hr data -->
-                    <td>3095</td>
-                    <td>2024-05-20</td>
-                    <td>4095</td>
-                    <td>568</td>
-                    <td><span class="status-ok">OK</span></td>
-                    
-                    <!-- 2000 hr data -->
-                    <td>2152</td>
-                    <td>2024-02-15</td>
-                    <td>4152</td>
-                    <td>625</td>
-                    <td><span class="status-ok">OK</span></td>
-                </tr>
-                
-                <!-- Sample Data for Excavators/Loaders -->
-                <tr>
-                    <td>AP39NR9178</td>
-                    <td>Loader</td>
-                    <td>2944</td>
-                    
-                    <!-- 500 hr data -->
-                    <td>2569</td>
-                    <td>2024-05-25</td>
-                    <td>3069</td>
-                    <td>125</td>
-                    <td><span class="status-warning">Warning</span></td>
-                    
-                    <!-- 1000 hr data -->
-                    <td>2088</td>
-                    <td>2024-04-05</td>
-                    <td>3088</td>
-                    <td>144</td>
-                    <td><span class="status-warning">Warning</span></td>
-                    
-                    <!-- 2000 hr data -->
-                    <td>2132</td>
-                    <td>2024-01-10</td>
-                    <td>4132</td>
-                    <td>1188</td>
-                    <td><span class="status-ok">OK</span></td>
-                </tr>
-                <tr>
-                    <td>312126</td>
-                    <td>Excavator</td>
-                    <td>1849</td>
-                    
-                    <!-- 500 hr data -->
-                    <td>1530</td>
-                    <td>2024-06-05</td>
-                    <td>2030</td>
-                    <td>181</td>
-                    <td><span class="status-ok">OK</span></td>
-                    
-                    <!-- 1000 hr data -->
-                    <td>1011</td>
-                    <td>2024-05-10</td>
-                    <td>2011</td>
-                    <td>162</td>
-                    <td><span class="status-ok">OK</span></td>
-                    
-                    <!-- 2000 hr data -->
-                    <td>0</td>
-                    <td>-</td>
-                    <td>2000</td>
-                    <td>151</td>
-                    <td><span class="status-ok">OK</span></td>
-                </tr>
-            </tbody>
-        </table>
-        
-        <div class="footer">
-            <p>Last Updated: <span id="lastUpdated"><?php echo date('Y-m-d H:i:s'); ?></span></p>
-            <p>© 2024 Equipment Management System</p>
-        </div>
-    </div>
+ <!-- Home Page -->
+ <div id="homePage" class="container home-container">
+ <h1>Equipment Management System</h1>
+ <h2>Tipper Status Summary</h2>
+ 
+ <div class="equipment-list">
+ <div class="equipment-card">
+ <div class="card-header">
+ <h3>Mail Sent Tippers</h3>
+ </div>
+ <div class="card-body" id="mailSentTippers">
+ </div>
+ </div>
+ 
+ <div class="equipment-card">
+ <div class="card-header">
+ <h3>Warning Tippers</h3>
+ </div>
+ <div class="card-body" id="warningTippers">
+ </div>
+ </div>
+ </div>
+ 
+ <a href="#" class="main-btn" onclick="showMaintenancePage()">View Maintenance Schedule</a>
+ 
+ <div class="footer">
+ <p>© 2025 Equipment Management System</p>
+ </div>
+ </div>
+ 
+ <!-- Maintenance Page (initially hidden) -->
+ <div id="maintenancePage" class="container" style="display: none;">
+ <a href="#" class="back-btn" onclick="showHomePage()">← Back to Home</a>
+ <h1>Equipment Maintenance Tracker</h1>
+ 
+ <div class="controls">
+ <div class="search-box">
+ <input type="text" id="searchInput" placeholder="Search equipment..." onkeyup="searchTable()">
+ </div>
+ <div class="filter-group">
+ <select id="statusFilter" onchange="filterTable()">
+ <option value="">All Status</option>
+ <option value="ok">OK</option>
+ <option value="warning">Warning</option>
+ <option value="action">Action Required</option>
+ </select>
+ <select id="equipmentFilter" onchange="filterTable()">
+ <option value="">All Equipment</option>
+ <option value="Tipper">Tippers</option>
+ <option value="Excavator">Excavators</option>
+ <option value="Loader">Loaders</option>
+ </select>
+ <button onclick="exportToExcel()">Export to Excel</button>
+ <button onclick="showHomePage()">Back to Home</button>
+ </div>
+ </div>
+ 
+ <table id="maintenanceTable">
+ <thead>
+ <tr>
+ <th rowspan="2">Equipment ID</th>
+ <th rowspan="2">Type</th>
+ <th rowspan="2">Current HMR</th>
+ <th colspan="5" class="service-header">500 hr Service</th>
+ <th colspan="5" class="service-header">1000 hr Service</th>
+ <th colspan="5" class="service-header">2000 hr Service</th>
+ </tr>
+ <tr>
+ <!-- 500 hr sub-headers -->
+ <th class="service-header">Previous</th>
+ <th class="service-header">Last Date</th>
+ <th class="service-header">Next Due</th>
+ <th class="service-header">HMR Left</th>
+ <th class="service-header">Status</th>
+ 
+ <!-- 1000 hr sub-headers -->
+ <th class="service-header">Previous</th>
+ <th class="service-header">Last Date</th>
+ <th class="service-header">Next Due</th>
+ <th class="service-header">HMR Left</th>
+ <th class="service-header">Status</th>
+ 
+ <!-- 2000 hr sub-headers -->
+ <th class="service-header">Previous</th>
+ <th class="service-header">Last Date</th>
+ <th class="service-header">Next Due</th>
+ <th class="service-header">HMR Left</th>
+ <th class="service-header">Status</th>
+ </tr>
+ </thead>
+ <tbody>
+ <!-- Sample Data for Tippers -->
+ <tr>
+ <td>AP39UQ0097</td>
+ <td>Tipper</td>
+ <td>5145</td>
+ 
+ <!-- 500 hr data -->
+ <td>5106</td>
+ <td>2024-05-15</td>
+ <td>5606</td>
+ <td>461</td>
+ <td><span class="status-ok">OK</span></td>
+ 
+ <!-- 1000 hr data -->
+ <td>5146</td>
+ <td>2024-04-10</td>
+ <td>6146</td>
+ <td>1001</td>
+ <td><span class="status-ok">OK</span></td>
+ 
+ <!-- 2000 hr data -->
+ <td>4105</td>
+ <td>2024-03-01</td>
+ <td>6105</td>
+ <td>960</td>
+ <td><span class="status-ok">OK</span></td>
+ </tr>
+ <tr>
+ <td>AP39UQ0091</td>
+ <td>Tipper</td>
+ <td>3527</td>
+ 
+ <!-- 500 hr data -->
+ <td>3097</td>
+ <td>2024-06-01</td>
+ <td>3597</td>
+ <td>70</td>
+ <td><span class="status-action">Mail Sent</span></td>
+ 
+ <!-- 1000 hr data -->
+ <td>3095</td>
+ <td>2024-05-20</td>
+ <td>4095</td>
+ <td>568</td>
+ <td><span class="status-ok">OK</span></td>
+ 
+ <!-- 2000 hr data -->
+ <td>2152</td>
+ <td>2024-02-15</td>
+ <td>4152</td>
+ <td>625</td>
+ <td><span class="status-ok">OK</span></td>
+ </tr>
+ 
+ <!-- Sample Data for Excavators/Loaders -->
+ <tr>
+ <td>AP39NR9178</td>
+ <td>Loader</td>
+ <td>2944</td>
+ 
+ <!-- 500 hr data -->
+ <td>2569</td>
+ <td>2024-05-25</td>
+ <td>3069</td>
+ <td>125</td>
+ <td><span class="status-warning">Warning</span></td>
+ 
+ <!-- 1000 hr data -->
+ <td>2088</td>
+ <td>2024-04-05</td>
+ <td>3088</td>
+ <td>144</td>
+ <td><span class="status-warning">Warning</span></td>
+ 
+ <!-- 2000 hr data -->
+ <td>2132</td>
+ <td>2024-01-10</td>
+ <td>4132</td>
+ <td>1188</td>
+ <td><span class="status-ok">OK</span></td>
+ </tr>
+ <tr>
+ <td>312126</td>
+ <td>Excavator</td>
+ <td>1849</td>
+ 
+ <!-- 500 hr data -->
+ <td>1530</td>
+ <td>2024-06-05</td>
+ <td>2030</td>
+ <td>181</td>
+ <td><span class="status-ok">OK</span></td>
+ 
+ <!-- 1000 hr data -->
+ <td>1011</td>
+ <td>2024-05-10</td>
+ <td>2011</td>
+ <td>162</td>
+ <td><span class="status-ok">OK</span></td>
+ 
+ <!-- 2000 hr data -->
+ <td>0</td>
+ <td>-</td>
+ <td>2000</td>
+ <td>151</td>
+ <td><span class="status-ok">OK</span></td>
+ </tr>
+ </tbody>
+ </table>
+ 
+ <div class="footer">
+ <p>Last Updated: <span id="lastUpdated">2025-08-11 16:11:00</span></p>
+ <p>© 2025 Equipment Management System</p>
+ </div>
+ </div>
 
-    <!-- Floating action button -->
-    <div id="floatingBtn" class="floating-btn" onclick="showMaintenancePage()" style="display: none;">
-        <i class="fas fa-home"></i>
-    </div>
+ <!-- Floating action button -->
+ <div id="floatingBtn" class="floating-btn" onclick="showHomePage()" style="display: none;">
+ <i class="fas fa-home"></i>
+ </div>
 
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+ <!-- Font Awesome for icons -->
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-    <script>
-        // Page navigation functions
-        function showMaintenancePage() {
-            document.getElementById('homePage').style.display = 'none';
-            document.getElementById('maintenancePage').style.display = 'block';
-            document.getElementById('floatingBtn').style.display = 'flex';
-            filterTable();
-        }
-        
-        function showHomePage() {
-            document.getElementById('homePage').style.display = 'block';
-            document.getElementById('maintenancePage').style.display = 'none';
-            document.getElementById('floatingBtn').style.display = 'none';
-        }
-        
-        // Table functions
-        function searchTable() {
-            const input = document.getElementById("searchInput");
-            const filter = input.value.toUpperCase();
-            const table = document.getElementById("maintenanceTable");
-            const tr = table.getElementsByTagName("tr");
-
-            for (let i = 2; i < tr.length; i++) { // Start from 2 to skip headers
-                let found = false;
-                const td = tr[i].getElementsByTagName("td");
-                
-                for (let j = 0; j < td.length; j++) {
-                    if (td[j]) {
-                        const txtValue = td[j].textContent || td[j].innerText;
-                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-                
-                tr[i].style.display = found ? "" : "none";
-            }
-        }
-        
-        function filterTable() {
-            const statusFilter = document.getElementById("statusFilter").value;
-            const equipmentFilter = document.getElementById("equipmentFilter").value;
-            const table = document.getElementById("maintenanceTable");
-            const tr = table.getElementsByTagName("tr");
-
-            for (let i = 2; i < tr.length; i++) {
-                const statusCells = [
-                    tr[i].cells[7],  // 500hr status
-                    tr[i].cells[12], // 1000hr status
-                    tr[i].cells[17]  // 2000hr status
-                ];
-                
-                const equipmentType = tr[i].cells[1].textContent;
-                let statusMatch = false;
-                let equipmentMatch = equipmentFilter === "" || equipmentType === equipmentFilter;
-                
-                // Check if any service matches status filter
-                if (statusFilter === "") {
-                    statusMatch = true;
-                } else {
-                    for (const cell of statusCells) {
-                        if (cell.textContent.toLowerCase().includes(statusFilter)) {
-                            statusMatch = true;
-                            break;
-                        }
-                    }
-                }
-                
-                tr[i].style.display = (statusMatch && equipmentMatch) ? "" : "none";
-            }
-        }
-        
-        function exportToExcel() {
-            alert("Exporting data to Excel...");
-            // In a real implementation, this would generate an Excel file
-        }
-        
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
-            // Start on the home page
-            showHomePage();
-        });
-    </script>
+ <script>
+ // Page navigation functions
+ function showMaintenancePage() {
+ document.getElementById('homePage').style.display = 'none';
+ document.getElementById('maintenancePage').style.display = 'block';
+ document.getElementById('floatingBtn').style.display = 'flex';
+ filterTable();
+ }
+ 
+ function showHomePage() {
+ document.getElementById('homePage').style.display = 'block';
+ document.getElementById('maintenancePage').style.display = 'none';
+ document.getElementById('floatingBtn').style.display = 'none';
+ updateHomePage();
+ }
+ 
+ // Update homepage with Mail Sent and Warning Tippers
+ function updateHomePage() {
+ const table = document.getElementById("maintenanceTable");
+ const tr = table.getElementsByTagName("tr");
+ const mailSentTippers = document.getElementById("mailSentTippers");
+ const warningTippers = document.getElementById("warningTippers");
+ 
+ mailSentTippers.innerHTML = "";
+ warningTippers.innerHTML = "";
+ 
+ for (let i = 2; i < tr.length; i++) {
+ const cells = tr[i].cells;
+ const equipmentType = cells[1].textContent;
+ if (equipmentType !== "Tipper") continue;
+ 
+ const equipmentId = cells[0].textContent;
+ const statusCells = [
+ cells[7], // 500hr status
+ cells[12], // 1000hr status
+ cells[17] // 2000hr status
+ ];
+ 
+ for (const cell of statusCells) {
+ const status = cell.textContent.toLowerCase();
+ if (status.includes("mail sent")) {
+ const btn = document.createElement("a");
+ btn.className = "status-btn mail-sent-btn";
+ btn.textContent = `Mail Sent: ${equipmentId}`;
+ mailSentTippers.appendChild(btn);
+ } else if (status.includes("warning")) {
+ const btn = document.createElement("a");
+ btn.className = "status-btn warning-btn";
+ btn.textContent = `Warning: ${equipmentId}`;
+ warningTippers.appendChild(btn);
+ }
+ }
+ }
+ 
+ // Add message if no tippers found
+ if (mailSentTippers.children.length === 0) {
+ const p = document.createElement("p");
+ p.className = "equipment-item";
+ p.textContent = "No Tippers with Mail Sent status";
+ mailSentTippers.appendChild(p);
+ }
+ if (warningTippers.children.length === 0) {
+ const p = document.createElement("p");
+ p.className = "equipment-item";
+ p.textContent = "No Tippers with Warning status";
+ warningTippers.appendChild(p);
+ }
+ }
+ 
+ // Table functions
+ function searchTable() {
+ const input = document.getElementById("searchInput");
+ const filter = input.value.toUpperCase();
+ const table = document.getElementById("maintenanceTable");
+ const tr = table.getElementsByTagName("tr");
+ 
+ for (let i = 2; i < tr.length; i++) {
+ let found = false;
+ const td = tr[i].getElementsByTagName("td");
+ 
+ for (let j = 0; j < td.length; j++) {
+ if (td[j]) {
+ const txtValue = td[j].textContent || td[j].innerText;
+ if (txtValue.toUpperCase().indexOf(filter) > -1) {
+ found = true;
+ break;
+ }
+ }
+ }
+ 
+ tr[i].style.display = found ? "" : "none";
+ }
+ }
+ 
+ function filterTable() {
+ const statusFilter = document.getElementById("statusFilter").value;
+ const equipmentFilter = document.getElementById("equipmentFilter").value;
+ const table = document.getElementById("maintenanceTable");
+ const tr = table.getElementsByTagName("tr");
+ 
+ for (let i = 2; i < tr.length; i++) {
+ const statusCells = [
+ tr[i].cells[7], // 500hr status
+ tr[i].cells[12], // 1000hr status
+ tr[i].cells[17] // 2000hr status
+ ];
+ 
+ const equipmentType = tr[i].cells[1].textContent;
+ let statusMatch = false;
+ let equipmentMatch = equipmentFilter === "" || equipmentType === equipmentFilter;
+ 
+ if (statusFilter === "") {
+ statusMatch = true;
+ } else {
+ for (const cell of statusCells) {
+ if (cell.textContent.toLowerCase().includes(statusFilter)) {
+ statusMatch = true;
+ break;
+ }
+ }
+ }
+ 
+ tr[i].style.display = (statusMatch && equipmentMatch) ? "" : "none";
+ }
+ }
+ 
+ function exportToExcel() {
+ alert("Exporting data to Excel...");
+ }
+ 
+ // Initialize the page
+ document.addEventListener('DOMContentLoaded', function() {
+ showHomePage();
+ });
+ </script>
 </body>
 </html>
