@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -292,6 +293,7 @@
  <option value="Excavator">Excavators</option>
  <option value="Loader">Loaders</option>
  </select>
+ <button onclick="exportToExcel()">Export to Excel</button>
  <button onclick="showHomePage()">Back to Home</button>
  </div>
  </div>
@@ -460,7 +462,7 @@
  const cells = tr[i].cells;
  const equipmentType = cells[1].textContent;
  const equipmentId = cells[0].textContent;
- if (equipmentType !== "Tipper" && equipmentId !== "AP39OQ9026 For 500 Hr") continue;
+ if (equipmentType !== "Tipper" && equipmentId !== "AP39OQ9026") continue;
  const statusCells = [
  cells[7], // 500hr status
  cells[12], // 1000hr status
